@@ -1,0 +1,56 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 384d544691482e488c4c1d5edbcdb5a8b2e094e219a74041248e126843cde971
+
+name:           dijkstra-simple
+version:        0.1.0
+synopsis:       A simpler Dijkstra shortest paths implementation
+category:       graph, dijkstra
+homepage:       https://github.com/blackheaven/dijkstra-simple#readme
+bug-reports:    https://github.com/blackheaven/dijkstra-simple/issues
+author:         Gautier DI FOLCO
+maintainer:     gautier.difolco@gmail.com
+copyright:      Gautier DI FOLCO
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/blackheaven/dijkstra-simple
+
+library
+  exposed-modules:
+      Graph.DijkstraSimple
+  other-modules:
+      Paths_dijkstra_simple
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers >=0.6.2.1 && <0.7
+    , fingertree >=0.1.4.0 && <0.1.5
+  default-language: Haskell2010
+
+test-suite dijkstra-simple-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Graph.DijkstraSimpleSpec
+      Paths_dijkstra_simple
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers >=0.6.2.1 && <0.7
+    , dijkstra-simple
+    , fingertree >=0.1.4.0 && <0.1.5
+    , hspec >=2.7.1 && <2.8
+  default-language: Haskell2010

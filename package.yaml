@@ -1,0 +1,36 @@
+name:                dijkstra-simple
+version:             0.1.0
+github:              "blackheaven/dijkstra-simple"
+license:             BSD3
+author:              "Gautier DI FOLCO"
+maintainer:          "gautier.difolco@gmail.com"
+copyright:           "Gautier DI FOLCO"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+synopsis:            A simpler Dijkstra shortest paths implementation
+category:            graph, dijkstra
+
+dependencies:
+- base >= 4.7 && < 5
+- containers >= 0.6.2.1 && < 0.7
+- fingertree >= 0.1.4.0 && < 0.1.5
+
+library:
+  source-dirs: src
+  exposed-module:
+  - Graph.DijkstraSimple
+
+tests:
+  dijkstra-simple-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - dijkstra-simple
+    - hspec >= 2.7.1 && < 2.8
