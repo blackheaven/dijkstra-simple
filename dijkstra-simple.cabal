@@ -4,11 +4,12 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 384d544691482e488c4c1d5edbcdb5a8b2e094e219a74041248e126843cde971
+-- hash: fd6c4b0f4fceaf2fb707cd10217a643e194c7acfadfeeea6313a754ce70aace9
 
 name:           dijkstra-simple
 version:        0.1.0
 synopsis:       A simpler Dijkstra shortest paths implementation
+description:    Provides a simplistic Dijkstra implementation with some useful variations and generalizations.
 category:       graph, dijkstra
 homepage:       https://github.com/blackheaven/dijkstra-simple#readme
 bug-reports:    https://github.com/blackheaven/dijkstra-simple/issues

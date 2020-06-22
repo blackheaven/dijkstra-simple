@@ -21,7 +21,7 @@ spec =
                                      , ('E', Path (fromList "EBAC") 5)
                                      ]
       let weighter = Weighter 0 $ \e p -> pathWeight p + edgeToWeight e
-      shortestPaths exampleGraph 'C' weighter `shouldBe` paths
+      lightestPaths exampleGraph 'C' weighter `shouldBe` paths
     it "maximal weighter" $ do
       let paths = Paths $ M.fromList [
                                        ('A', Path (fromList "AC") 1)
@@ -31,7 +31,7 @@ spec =
                                      , ('E', Path (fromList "EBAC") 3)
                                      ]
       let weighter = Weighter minBound $ \e p -> max (pathWeight p) (edgeToWeight e)
-      shortestPaths exampleGraph 'C' weighter `shouldBe` paths
+      lightestPaths exampleGraph 'C' weighter `shouldBe` paths
 
 exampleGraph :: Graph Char Int
 exampleGraph = Graph $ M.fromList [
