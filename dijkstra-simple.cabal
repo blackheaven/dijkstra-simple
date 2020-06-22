@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fd6c4b0f4fceaf2fb707cd10217a643e194c7acfadfeeea6313a754ce70aace9
+-- hash: eda69c61b31c55e7b7543d5a62f49b4d825fbcc34fc8dfe9e95a130bfbe13628
 
 name:           dijkstra-simple
 version:        0.1.0
@@ -29,6 +29,7 @@ source-repository head
 library
   exposed-modules:
       Graph.DijkstraSimple
+      Graph.DijkstraSimple.Weighters
   other-modules:
       Paths_dijkstra_simple
   hs-source-dirs:

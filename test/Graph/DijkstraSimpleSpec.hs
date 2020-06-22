@@ -5,6 +5,7 @@ import qualified Data.Map.Lazy as M
 import Test.Hspec
 
 import Graph.DijkstraSimple
+import Graph.DijkstraSimple.Weighters
 
 main :: IO ()
 main = hspec spec
@@ -20,8 +21,7 @@ spec =
                                      , ('D', Path (fromList "DC") 2)
                                      , ('E', Path (fromList "EBAC") 5)
                                      ]
-      let weighter = Weighter 0 $ \e p -> pathWeight p + edgeToWeight e
-      lightestPaths exampleGraph 'C' weighter `shouldBe` paths
+      lightestPaths exampleGraph 'C' cumulativeWeighter `shouldBe` paths
     it "maximal weighter" $ do
       let paths = Paths $ M.fromList [
                                        ('A', Path (fromList "AC") 1)
@@ -30,8 +30,7 @@ spec =
                                      , ('D', Path (fromList "DC") 2)
                                      , ('E', Path (fromList "EBAC") 3)
                                      ]
-      let weighter = Weighter minBound $ \e p -> max (pathWeight p) (edgeToWeight e)
-      lightestPaths exampleGraph 'C' weighter `shouldBe` paths
+      lightestPaths exampleGraph 'C' maximumWeightWeighter `shouldBe` paths
 
 exampleGraph :: Graph Char Int
 exampleGraph = Graph $ M.fromList [
