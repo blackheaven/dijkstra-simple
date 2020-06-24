@@ -1,22 +1,27 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Graph.DijkstraSimple (
+module Graph.DijkstraSimple
+  (
                             -- * How to use this library
                             -- $use
-                              lightestPaths
-                            , findPath
-                            , dijkstraSteps
-                            , EdgeTo(..)
-                            , Graph(..)
-                            , Weighter(..)
-                            , Path(..)
-                            , Paths(..)
-                            )  where
+    lightestPaths
+  , findPath
+  , dijkstraSteps
+  , EdgeTo(..)
+  , Graph(..)
+  , Weighter(..)
+  , Path(..)
+  , Paths(..)
+  )
+where
 
-import qualified Data.Map.Lazy as M
-import qualified Data.List.NonEmpty as NE
-import Data.Maybe(fromJust, isJust, isNothing)
-import Data.Ord(comparing)
+import qualified Data.Map.Lazy                 as M
+import qualified Data.List.NonEmpty            as NE
+import           Data.Maybe                     ( fromJust
+                                                , isJust
+                                                , isNothing
+                                                )
+import           Data.Ord                       ( comparing )
 import qualified Data.PriorityQueue.FingerTree as P
 
 -- | Edge to an arbitrary vertex and the associated input weight
@@ -35,48 +40,73 @@ data Path v e a = Path { pathVertices :: NE.NonEmpty v, pathWeight :: a } derivi
 newtype Paths v e a = Paths { pathsAsMap :: M.Map v (Path v e a) } deriving (Eq, Show)
 
 -- | Explore all the reachable edges
-lightestPaths :: forall v e a . (Ord v, Ord a) => Graph v e -> v -> Weighter v e a -> Paths v e a
-lightestPaths graph origin weighter = NE.last $ dijkstraSteps graph origin weighter
+lightestPaths
+  :: forall v e a
+   . (Ord v, Ord a)
+  => Graph v e
+  -> v
+  -> Weighter v e a
+  -> Paths v e a
+lightestPaths graph origin weighter =
+  NE.last $ dijkstraSteps graph origin weighter
 
 -- | Find the eventual path between two edges
-findPath :: forall v e a . (Ord v, Ord a) => Graph v e -> v -> Weighter v e a -> v -> Maybe (Path v e a)
-findPath graph origin weighter target = pathsAsMap (lightestPaths graph origin weighter) M.!? target
+findPath
+  :: forall v e a
+   . (Ord v, Ord a)
+  => Graph v e
+  -> v
+  -> Weighter v e a
+  -> v
+  -> Maybe (Path v e a)
+findPath graph origin weighter target =
+  pathsAsMap (lightestPaths graph origin weighter) M.!? target
 
 type StatePQ v e a = P.PQueue a (Path v e a, EdgeTo v e)
-type State v e a = (M.Map v (Path v e a), ((a, (Path v e a, EdgeTo v e)), StatePQ v e a))
+type State v e a
+  = (M.Map v (Path v e a), ((a, (Path v e a, EdgeTo v e)), StatePQ v e a))
 
 -- | Details each step of the Dijkstra algorithm
-dijkstraSteps :: forall v e a . (Ord v, Ord a) => Graph v e -> v -> Weighter v e a -> NE.NonEmpty (Paths v e a)
-dijkstraSteps graph origin weighter = Paths <$> maybe (M.empty NE.:| []) (NE.unfoldr nextStep) init
-  where init :: Maybe (State v e a)
-        init = (\p -> (M.empty, p)) <$> (P.minViewWithKey $ findEdges (Path (origin NE.:| []) (initialWeight weighter)) origin)
-        nextStep :: State v e a -> (M.Map v (Path v e a), Maybe (State v e a))
-        nextStep (paths, ((w, (path, e)), pq)) =
-          let npq = if M.notMember (edgeTo e) paths
-                     then pq `P.union` findEdges path (edgeTo e)
-                     else pq
-              nps = M.alter (updatePath path) (edgeTo e) paths
-          in (nps, (\q -> (nps, q)) <$> P.minViewWithKey npq)
-        updatePath :: Path v e a -> Maybe (Path v e a) -> Maybe (Path v e a)
-        updatePath p prev =
-          case prev of
-            Nothing -> Just p
-            Just op -> Just $ if pathWeight op <= pathWeight p
-                                then op
-                                else p
-        findEdges :: Path v e a -> v -> StatePQ v e a
-        findEdges path vertice = P.fromList
-                                  $ map (buildPath path)
-                                  $ M.findWithDefault [] vertice
-                                  $ graphAsMap graph
-        buildPath :: Path v e a -> EdgeTo v e -> (a, (Path v e a, EdgeTo v e))
-        buildPath path e = let np = addEdge e path
-                            in (pathWeight np, (np, e))
-        addEdge :: EdgeTo v e -> Path v e a -> Path v e a
-        addEdge e p = Path
-                    { pathVertices = edgeTo e NE.<| pathVertices p
-                    , pathWeight = weight weighter e p
-                    }
+dijkstraSteps
+  :: forall v e a
+   . (Ord v, Ord a)
+  => Graph v e
+  -> v
+  -> Weighter v e a
+  -> NE.NonEmpty (Paths v e a)
+dijkstraSteps graph origin weighter =
+  Paths <$> maybe (M.empty NE.:| []) (NE.unfoldr nextStep) init
+ where
+  init :: Maybe (State v e a)
+  init =
+    (\p -> (M.empty, p))
+      <$> (P.minViewWithKey $ findEdges
+            (Path (origin NE.:| []) (initialWeight weighter))
+            origin
+          )
+  nextStep :: State v e a -> (M.Map v (Path v e a), Maybe (State v e a))
+  nextStep (paths, ((w, (path, e)), pq)) =
+    let npq = if M.notMember (edgeTo e) paths
+          then pq `P.union` findEdges path (edgeTo e)
+          else pq
+        nps = M.alter (updatePath path) (edgeTo e) paths
+    in  (nps, (\q -> (nps, q)) <$> P.minViewWithKey npq)
+  updatePath :: Path v e a -> Maybe (Path v e a) -> Maybe (Path v e a)
+  updatePath p prev = case prev of
+    Nothing -> Just p
+    Just op -> Just $ if pathWeight op <= pathWeight p then op else p
+  findEdges :: Path v e a -> v -> StatePQ v e a
+  findEdges path vertice =
+    P.fromList
+      $ map (buildPath path)
+      $ M.findWithDefault [] vertice
+      $ graphAsMap graph
+  buildPath :: Path v e a -> EdgeTo v e -> (a, (Path v e a, EdgeTo v e))
+  buildPath path e = let np = addEdge e path in (pathWeight np, (np, e))
+  addEdge :: EdgeTo v e -> Path v e a -> Path v e a
+  addEdge e p = Path { pathVertices = edgeTo e NE.<| pathVertices p
+                     , pathWeight   = weight weighter e p
+                     }
 
 -- $use
 --

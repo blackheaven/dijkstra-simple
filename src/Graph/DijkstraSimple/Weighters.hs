@@ -1,13 +1,15 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Graph.DijkstraSimple.Weighters (
+module Graph.DijkstraSimple.Weighters
+  (
                                       -- * How weighters are used
                                       -- $use
-                                        cumulativeWeighter
-                                      , maximumWeightWeighter
-                                      )  where
+    cumulativeWeighter
+  , maximumWeightWeighter
+  )
+where
 
-import Graph.DijkstraSimple
+import           Graph.DijkstraSimple
 
 -- | The classical weighter: the weight of a path is the sum of each edge
 -- weight.
@@ -16,7 +18,8 @@ cumulativeWeighter = Weighter 0 $ \e p -> pathWeight p + edgeToWeight e
 
 -- | Here we are looking for the heaviest edge weight
 maximumWeightWeighter :: (Bounded e, Ord e) => Weighter v e e
-maximumWeightWeighter = Weighter minBound $ \e p -> max (pathWeight p) (edgeToWeight e)
+maximumWeightWeighter =
+  Weighter minBound $ \e p -> max (pathWeight p) (edgeToWeight e)
 
 -- $use
 --
